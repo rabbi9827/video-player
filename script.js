@@ -51,7 +51,7 @@ let pmsg = 'Copy Embed Code' ;
 let embedsp=()=> {
   prompt(pmsg,`<iframe width="560" height="315" 
 scrolling="no"
-src="https://sh20raj.github.io/DrivePlyr/sopplayer.html?id=${base}" 
+src="https://rabbi9827.github.io/video-player/sopplayer.html?id=${base}" 
 frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; 
 gyroscope; picture-in-picture" allowfullscreen>
 </iframe>`)
@@ -59,7 +59,7 @@ gyroscope; picture-in-picture" allowfullscreen>
 let embedplyr=()=> {
   prompt(pmsg,`<iframe width="560" height="315" 
 scrolling="no"
-src="https://sh20raj.github.io/DrivePlyr/plyr.html?id=${base}" 
+src="https://rabbi9827.github.io/video-player/plyr.html?id=${base}" 
 frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; 
 gyroscope; picture-in-picture" allowfullscreen>
 </iframe>`)
@@ -67,7 +67,7 @@ gyroscope; picture-in-picture" allowfullscreen>
 let embedfluid=()=> {
   prompt(pmsg,`<iframe width="560" height="315" 
 scrolling="no"
-src="https://sh20raj.github.io/DrivePlyr/fluid.html?id=${base}" 
+src="https://rabbi9827.github.io/video-player/fluid.html?id=${base}" 
 frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; 
 gyroscope; picture-in-picture" allowfullscreen>
 </iframe>`)
@@ -75,7 +75,7 @@ gyroscope; picture-in-picture" allowfullscreen>
 let embedafterglow=()=> {
   prompt(pmsg,`<iframe width="560" height="315" 
 scrolling="no"
-src="https://sh20raj.github.io/DrivePlyr/afterglow.html?id=${base}" 
+src="https://rabbi9827.github.io/video-player/afterglow.html?id=${base}" 
 frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; 
 gyroscope; picture-in-picture" allowfullscreen>
 </iframe>`)
@@ -83,7 +83,7 @@ gyroscope; picture-in-picture" allowfullscreen>
 let embedmediaelements=()=> {
   prompt(pmsg,`<iframe width="560" height="315" 
 scrolling="no"
-src="https://sh20raj.github.io/DrivePlyr/mediaelements.html?id=${base}" 
+src="https://rabbi9827.github.io/video-player/mediaelements.html?id=${base}" 
 frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; 
 gyroscope; picture-in-picture" allowfullscreen>
 </iframe>`)
@@ -91,7 +91,7 @@ gyroscope; picture-in-picture" allowfullscreen>
 let embedvlitejs=()=> {
   prompt(pmsg,`<iframe width="560" height="315" 
 scrolling="no"
-src="https://sh20raj.github.io/DrivePlyr/vlitejs.html?id=${base}" 
+src="https://rabbi9827.github.io/video-player/vlitejs.html?id=${base}" 
 frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; 
 gyroscope; picture-in-picture" allowfullscreen>
 </iframe>`);
@@ -100,14 +100,14 @@ gyroscope; picture-in-picture" allowfullscreen>
 
 
 let iframe=()=> {
-  s('afterglow').src= 'https://sh20raj.github.io/DrivePlyr/afterglow.html?id='+base;
-  s('fluid').src='https://sh20raj.github.io/DrivePlyr/fluid.html?id='+base;
-  s('plyr').src='https://sh20raj.github.io/DrivePlyr/plyr.html?id='+base;
+  s('afterglow').src= 'https://rabbi9827.github.io/video-player/afterglow.html?id='+base;
+  s('fluid').src='https://rabbi9827.github.io/video-player/fluid.html?id='+base;
+  s('plyr').src='https://rabbi9827.github.io/video-player/plyr.html?id='+base;
 
-  s('vlitejs').src='https://sh20raj.github.io/DrivePlyr/vlitejs.html?id='+base;
-  s('mediaelements').src='https://sh20raj.github.io/DrivePlyr/mediaelements.html?id='+base;
+  s('vlitejs').src='https://rabbi9827.github.io/video-player/vlitejs.html?id='+base;
+  s('mediaelements').src='https://rabbi9827.github.io/video-player/mediaelements.html?id='+base;
   
-    s('sopplayer').src='https://sh20raj.github.io/DrivePlyr/sopplayer.html?id='+base;
+    s('sopplayer').src='https://rabbi9827.github.io/video-player/sopplayer.html?id='+base;
   
 }
 
