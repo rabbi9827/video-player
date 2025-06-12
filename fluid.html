@@ -65,6 +65,53 @@
 	}
 }
     );
+
+    // Auto-rotate screen functionality for fullscreen
+    function rotateToLandscape() {
+        if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('landscape-primary').catch(err => {
+                console.log('Screen orientation lock failed:', err);
+            });
+        } else if (screen.lockOrientation) {
+            screen.lockOrientation('landscape-primary');
+        } else if (screen.webkitLockOrientation) {
+            screen.webkitLockOrientation('landscape-primary');
+        } else if (screen.mozLockOrientation) {
+            screen.mozLockOrientation('landscape-primary');
+        }
+    }
+
+    function unlockOrientation() {
+        if (screen.orientation && screen.orientation.unlock) {
+            screen.orientation.unlock();
+        } else if (screen.unlockOrientation) {
+            screen.unlockOrientation();
+        } else if (screen.webkitUnlockOrientation) {
+            screen.webkitUnlockOrientation();
+        } else if (screen.mozUnlockOrientation) {
+            screen.mozUnlockOrientation();
+        }
+    }
+
+    // Handle fullscreen changes
+    function handleFullscreenChange() {
+        const isFullscreen = document.fullscreenElement || 
+                            document.webkitFullscreenElement || 
+                            document.mozFullScreenElement || 
+                            document.msFullscreenElement;
+        
+        if (isFullscreen) {
+            setTimeout(rotateToLandscape, 100);
+        } else {
+            setTimeout(unlockOrientation, 100);
+        }
+    }
+
+    // Add event listeners
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 </script>
 <script>
   var apikey = ['AIzaSyCt3DULzE2trDJhfFUosWZT-3GEObbMqVU', 'AIzaSyCsbx8BSyLwkw6XX6Lg5OF1U0HNtI9VmCY', 'AIzaSyBLMJAT6oqTZxAMsCsMjXzoo4lkJL4MmfM', 'AIzaSyCIY6fomcJxOt0XQ_naa1rzfd5wlOMGKDY'][Math.floor(Math.random() * 4)];
