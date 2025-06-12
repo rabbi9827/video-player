@@ -38,12 +38,12 @@ let getbase=()=>{
 
 
 //Player Openers (diff. func. coding intentionally)
-let opensp=()=> { window.open('https://sh20raj.github.io/DrivePlyr/sopplayer.html?id='+base)}
-let openplyr=()=> { window.open('https://sh20raj.github.io/DrivePlyr/plyr.html?id='+base)}
-let openfluid=()=> { window.open('https://sh20raj.github.io/DrivePlyr/fluid.html?id='+base)}
-let openafterglow=()=> { window.open('https://sh20raj.github.io/DrivePlyr/afterglow.html?id='+base)}
-let openmediaelements=()=> { window.open('https://sh20raj.github.io/DrivePlyr/mediaelements.html?id='+base)}
-let openvlitejs=()=> { window.open('https://sh20raj.github.io/DrivePlyr/vlitejs.html?id='+base)}
+let opensp=()=> { window.open('https://rabbi9827.github.io/video-player/sopplayer.html?id='+base)}
+let openplyr=()=> { window.open('https://rabbi9827.github.io/video-player/plyr.html?id='+base)}
+let openfluid=()=> { window.open('https://rabbi9827.github.io/video-player/fluid.html?id='+base)}
+let openafterglow=()=> { window.open('https://rabbi9827.github.io/video-player/afterglow.html?id='+base)}
+let openmediaelements=()=> { window.open('https://rabbi9827.github.io/video-player/mediaelements.html?id='+base)}
+let openvlitejs=()=> { window.open('https://rabbi9827.github.io/video-player/vlitejs.html?id='+base)}
 
 
 let pmsg = 'Copy Embed Code' ;
