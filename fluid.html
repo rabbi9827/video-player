@@ -43,7 +43,7 @@ video::cue {
 }
 
 /* ========== POPUP AD STYLES ========== */
-/* বক্স বাদ দিয়ে শুধু এড এবং ক্রস বাটন রাখা হয়েছে */
+/* পপআপ এড ওভারলে */
 .native-ad-overlay {
   position: fixed;
   top: 0;
@@ -65,24 +65,41 @@ video::cue {
   display: none;
 }
 
-/* নতুন wrapper যোগ করা হয়েছে X বাটন ঠিক করতে */
-.native-ad-wrapper {
+/* পপআপ এড মোডাল */
+.native-ad-modal {
   position: relative;
-  display: inline-block;
+  width: 90%;
+  max-width: 400px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  overflow: visible;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  animation: adModalIn 0.3s ease;
 }
 
-/* ক্লোজ বাটন - এডের উপরে ডানে */
+@keyframes adModalIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* পপআপ ক্লোজ বাটন - ছবির মতো */
 .native-ad-close {
   position: absolute;
   top: -12px;
   right: -12px;
-  width: 30px;
-  height: 30px;
-  background: rgba(100, 100, 100, 0.9);
-  border: none;
+  width: 28px;
+  height: 28px;
+  background: #fff;
+  border: 2px solid #999;
   border-radius: 50%;
-  color: #fff;
-  font-size: 20px;
+  color: #666;
+  font-size: 18px;
   font-weight: bold;
   cursor: pointer;
   display: flex;
@@ -95,25 +112,19 @@ video::cue {
 }
 
 .native-ad-close:hover {
-  background: rgba(80, 80, 80, 1);
+  background: #ff4444;
+  color: #fff;
+  border-color: #ff4444;
 }
 
 /* Ad container */
 .ad-container-popup {
+  width: 100%;
+  min-height: 250px;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-@keyframes adModalIn {
-  from {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+  padding: 10px;
 }
 
 /* ========== VIDEO PLAYER STYLES ========== */
@@ -515,11 +526,13 @@ body {
 
 <!-- ========== POPUP AD - শুধু মাঝখানে ========== -->
 <div class="native-ad-overlay" id="native-ad-overlay">
-  <div class="native-ad-wrapper">
+  <div class="native-ad-modal">
     <button class="native-ad-close" id="native-ad-close">&times;</button>
     <div class="ad-container-popup" id="ad-container-popup">
       <!-- 
       ★★★ আপনার ADSTERRA কোড এখানে পেস্ট করুন ★★★
+      
+      Adsterra থেকে Native Banner কোড কপি করে নিচে পেস্ট করুন:
       -->
       <script async="async" data-cfasync="false" src="https://pl28245096.effectivegatecpm.com/e3e3845182f115c940268442dba69c39/invoke.js"></script>
       <div id="container-e3e3845182f115c940268442dba69c39"></div>
