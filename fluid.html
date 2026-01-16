@@ -42,45 +42,15 @@ video::cue {
   opacity: 0;
 }
 
-/* ========== NATIVE BANNER AD STYLES ========== */
-/* বাম পাশের এড */
-.native-ad-left {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 50px;
-  height: 100%;
-  z-index: 9998;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  pointer-events: auto;
-}
-
-/* ডান পাশের এড */
-.native-ad-right {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 50px;
-  height: 100%;
-  z-index: 9998;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  pointer-events: auto;
-}
-
-/* পপআপ এড ওভারলে */
+/* ========== POPUP AD STYLES ========== */
+/* বক্স বাদ দিয়ে শুধু এড এবং ক্রস বাটন রাখা হয়েছে */
 .native-ad-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -95,41 +65,23 @@ video::cue {
   display: none;
 }
 
-/* পপআপ এড মোডাল */
-.native-ad-modal {
+/* নতুন wrapper যোগ করা হয়েছে X বাটন ঠিক করতে */
+.native-ad-wrapper {
   position: relative;
-  width: 90%;
-  max-width: 450px;
-  min-height: 300px;
-  background: #f5f5f5;
-  border-radius: 8px;
-  overflow: visible;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  animation: adModalIn 0.3s ease;
+  display: inline-block;
 }
 
-@keyframes adModalIn {
-  from {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-/* পপআপ ক্লোজ বাটন */
+/* ক্লোজ বাটন - এডের উপরে ডানে */
 .native-ad-close {
   position: absolute;
   top: -12px;
   right: -12px;
-  width: 28px;
-  height: 28px;
-  background: #fff;
-  border: 2px solid #ccc;
+  width: 30px;
+  height: 30px;
+  background: rgba(100, 100, 100, 0.9);
+  border: none;
   border-radius: 50%;
-  color: #666;
+  color: #fff;
   font-size: 20px;
   font-weight: bold;
   cursor: pointer;
@@ -143,32 +95,25 @@ video::cue {
 }
 
 .native-ad-close:hover {
-  background: #ff4444;
-  color: #fff;
-  border-color: #ff4444;
-  transform: scale(1.1);
+  background: rgba(80, 80, 80, 1);
 }
 
 /* Ad container */
-.ad-container {
-  width: 100%;
-  height: 100%;
+.ad-container-popup {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.native-ad-modal .ad-container {
-  min-height: 300px;
-  padding: 10px;
-}
-
-/* ফুলস্ক্রিনে এড লুকান */
-.video_player:fullscreen ~ .native-ad-left,
-.video_player:fullscreen ~ .native-ad-right,
-:fullscreen .native-ad-left,
-:fullscreen .native-ad-right {
-  display: none !important;
+@keyframes adModalIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* ========== VIDEO PLAYER STYLES ========== */
@@ -546,11 +491,6 @@ body {
     width: 100%;
     border-radius: 0;
   }
-  
-  .native-ad-left,
-  .native-ad-right {
-    width: 45px;
-  }
 }
 
 @media (max-width: 430px) {
@@ -573,41 +513,16 @@ body {
 }
 </style>
 
-<!-- ========== NATIVE BANNER ADS ========== -->
-
-<!-- বাম পাশের এড (Left Side Ad) -->
-<div class="native-ad-left" id="native-ad-left">
-  <div class="ad-container" id="ad-container-left">
-    <!-- 
-    ===== আপনার LEFT SIDE AD কোড এখানে বসান =====
-    Adsterra থেকে কোড কপি করে এখানে পেস্ট করুন
-    -->
-  </div>
-</div>
-
-<!-- ডান পাশের এড (Right Side Ad) -->
-<div class="native-ad-right" id="native-ad-right">
-  <div class="ad-container" id="ad-container-right">
-    <!-- 
-    ===== আপনার RIGHT SIDE AD কোড এখানে বসান =====
-    Adsterra থেকে কোড কপি করে এখানে পেস্ট করুন
-    -->
-  </div>
-</div>
-
-<!-- পপআপ এড (Center Popup Ad) -->
+<!-- ========== POPUP AD - শুধু মাঝখানে ========== -->
 <div class="native-ad-overlay" id="native-ad-overlay">
-  <div class="native-ad-modal">
+  <div class="native-ad-wrapper">
     <button class="native-ad-close" id="native-ad-close">&times;</button>
-    <div class="ad-container" id="ad-container-popup">
+    <div class="ad-container-popup" id="ad-container-popup">
       <!-- 
-      ===== আপনার POPUP AD কোড এখানে বসান =====
-      Adsterra থেকে কোড কপি করে এখানে পেস্ট করুন:
-      
-      উদাহরণ:
+      ★★★ আপনার ADSTERRA কোড এখানে পেস্ট করুন ★★★
+      -->
       <script async="async" data-cfasync="false" src="https://pl28245096.effectivegatecpm.com/e3e3845182f115c940268442dba69c39/invoke.js"></script>
       <div id="container-e3e3845182f115c940268442dba69c39"></div>
-      -->
     </div>
   </div>
 </div>
@@ -691,59 +606,46 @@ body {
 </div>
 
 <script>
-  // ========== NATIVE BANNER AD CONFIGURATION ==========
-  // এই সেটিংস পরিবর্তন করে এড চালু/বন্ধ করুন
-  const NATIVE_AD_CONFIG = {
-    showLeftAd: true,       // বাম পাশের এড (true = দেখাবে, false = দেখাবে না)
-    showRightAd: true,      // ডান পাশের এড
-    showPopupAd: true,      // পপআপ এড (ভিডিও প্লে করার আগে)
-    popupShowOnEveryVisit: true  // true = প্রতিবার দেখাবে, false = সেশনে একবারই
+  // ========== POPUP AD SETTINGS ==========
+  const POPUP_AD_CONFIG = {
+    enabled: true,              // true = এড দেখাবে, false = এড বন্ধ
+    showEveryTime: true         // true = প্রতিবার দেখাবে, false = সেশনে একবার
   };
 
-  // Initialize Native Ads
-  function initNativeAds() {
-    // Left Ad
-    const leftAd = document.getElementById('native-ad-left');
-    if (!NATIVE_AD_CONFIG.showLeftAd) {
-      leftAd.style.display = 'none';
-    }
-    
-    // Right Ad
-    const rightAd = document.getElementById('native-ad-right');
-    if (!NATIVE_AD_CONFIG.showRightAd) {
-      rightAd.style.display = 'none';
-    }
-    
-    // Popup Ad
+  // Initialize Popup Ad
+  function initPopupAd() {
     const overlay = document.getElementById('native-ad-overlay');
     const closeBtn = document.getElementById('native-ad-close');
     
-    if (!NATIVE_AD_CONFIG.showPopupAd) {
+    if (!POPUP_AD_CONFIG.enabled) {
       overlay.classList.add('hidden');
-    } else {
-      if (!NATIVE_AD_CONFIG.popupShowOnEveryVisit) {
-        const adShown = sessionStorage.getItem('native_ad_popup_shown');
-        if (adShown) {
-          overlay.classList.add('hidden');
-        }
-      }
-      
-      // Close button click
-      closeBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        overlay.classList.add('hidden');
-        sessionStorage.setItem('native_ad_popup_shown', 'true');
-      });
-      
-      // Click outside to close
-      overlay.addEventListener('click', function(e) {
-        if (e.target === overlay) {
-          overlay.classList.add('hidden');
-          sessionStorage.setItem('native_ad_popup_shown', 'true');
-        }
-      });
+      return;
     }
+    
+    // Check if already shown in this session
+    if (!POPUP_AD_CONFIG.showEveryTime) {
+      const adShown = sessionStorage.getItem('popup_ad_shown');
+      if (adShown) {
+        overlay.classList.add('hidden');
+        return;
+      }
+    }
+    
+    // Close button click
+    closeBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      overlay.classList.add('hidden');
+      sessionStorage.setItem('popup_ad_shown', 'true');
+    });
+    
+    // Click outside modal to close
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) {
+        overlay.classList.add('hidden');
+        sessionStorage.setItem('popup_ad_shown', 'true');
+      }
+    });
   }
 
   // Google API Keys
@@ -787,8 +689,8 @@ body {
   const settingDivs = document.querySelectorAll('.settings > div');
   const settingBack = document.querySelectorAll('.settings > div .back_arrow');
 
-  // Initialize Native Ads
-  initNativeAds();
+  // Initialize Popup Ad
+  initPopupAd();
 
   // Load video from Google Drive
   if (getparam('id')) {
@@ -799,256 +701,224 @@ body {
       mainVideo.poster = 'https://lh3.googleusercontent.com/d/' + driveid;
     } catch (e) {
       console.error('Invalid video ID');
-      mainVideo.src = 'https://bit.ly/bbsamplevideo';
     }
-  } else {
-    mainVideo.src = 'https://bit.ly/bbsamplevideo';
   }
 
-  // Play/Pause
-  function playVideo() {
-    play_pause.innerHTML = 'pause';
-    play_pause.title = 'Pause';
-    video_player.classList.add('paused');
-    mainVideo.play();
+  // Format time
+  function formatTime(time) {
+    const hours = Math.floor(time / 3600);
+    const minutes = Math.floor((time % 3600) / 60);
+    const seconds = Math.floor(time % 60);
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   }
 
-  function pauseVideo() {
-    play_pause.innerHTML = 'play_arrow';
-    play_pause.title = 'Play';
-    video_player.classList.remove('paused');
-    mainVideo.pause();
+  // Update progress bar
+  function updateProgress() {
+    const progressPercent = (mainVideo.currentTime / mainVideo.duration) * 100;
+    progress_Bar.style.width = `${progressPercent}%`;
+    current.textContent = formatTime(mainVideo.currentTime);
   }
 
-  play_pause.addEventListener('click', () => {
-    video_player.classList.contains('paused') ? pauseVideo() : playVideo();
-  });
-
-  mainVideo.addEventListener('play', playVideo);
-  mainVideo.addEventListener('pause', pauseVideo);
-
-  // Click on video to play/pause
-  mainVideo.addEventListener('click', () => {
-    video_player.classList.contains('paused') ? pauseVideo() : playVideo();
-  });
-
-  // Fast rewind/forward
-  fast_rewind.addEventListener('click', () => { mainVideo.currentTime -= 10; });
-  fast_forward.addEventListener('click', () => { mainVideo.currentTime += 10; });
-
-  // Duration
-  mainVideo.addEventListener('loadeddata', (e) => {
-    const duration = e.target.duration;
-    const min = Math.floor(duration / 60);
-    let sec = Math.floor(duration % 60);
-    sec = sec < 10 ? '0' + sec : sec;
-    totalDuration.innerHTML = `${min}:${sec}`;
-  });
-
-  // Time update
-  mainVideo.addEventListener('timeupdate', (e) => {
-    const currentTime = e.target.currentTime;
-    const duration = e.target.duration;
-    const min = Math.floor(currentTime / 60);
-    let sec = Math.floor(currentTime % 60);
-    sec = sec < 10 ? '0' + sec : sec;
-    current.innerHTML = `${min}:${sec}`;
-    const progressWidth = (currentTime / duration) * 100;
-    progress_Bar.style.width = `${progressWidth}%`;
-  });
-
-  // Progress bar click
-  progressArea.addEventListener('pointerdown', (e) => {
-    progressArea.setPointerCapture(e.pointerId);
-    setTimelinePosition(e);
-    progressArea.addEventListener('pointermove', setTimelinePosition);
-    progressArea.addEventListener('pointerup', () => {
-      progressArea.removeEventListener('pointermove', setTimelinePosition);
-    });
-  });
-
-  function setTimelinePosition(e) {
+  // Set progress on click
+  function setProgress(e) {
     const width = progressArea.clientWidth;
     const clickX = e.offsetX;
     mainVideo.currentTime = (clickX / width) * mainVideo.duration;
   }
 
-  // Buffered bar
-  function drawProgress(canvas, buffered, duration) {
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    const height = canvas.height;
-    const width = canvas.width;
-    ctx.clearRect(0, 0, width, height);
-    for (let i = 0; i < buffered.length; i++) {
-      const start = (buffered.start(i) / duration) * width;
-      const end = (buffered.end(i) / duration) * width;
-      ctx.fillRect(start, 0, end - start, height);
+  // Update buffered bar
+  function updateBuffer() {
+    if (mainVideo.buffered.length > 0) {
+      const bufferedEnd = mainVideo.buffered.end(mainVideo.buffered.length - 1);
+      const duration = mainVideo.duration;
+      const canvas = bufferedBar;
+      const ctx = canvas.getContext('2d');
+      canvas.width = progressArea.clientWidth;
+      canvas.height = 5;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.fillRect(0, 0, (bufferedEnd / duration) * canvas.width, canvas.height);
     }
   }
 
-  mainVideo.addEventListener('progress', () => {
-    drawProgress(bufferedBar, mainVideo.buffered, mainVideo.duration);
-  });
+  // Play/Pause
+  function playPause() {
+    if (mainVideo.paused) {
+      mainVideo.play();
+      play_pause.textContent = 'pause';
+    } else {
+      mainVideo.pause();
+      play_pause.textContent = 'play_arrow';
+    }
+  }
 
-  // Loader
-  mainVideo.addEventListener('waiting', () => { loader.style.display = 'block'; });
-  mainVideo.addEventListener('canplay', () => { loader.style.display = 'none'; });
+  // Fast rewind
+  function fastRewind() {
+    mainVideo.currentTime -= 10;
+  }
 
-  // Volume
+  // Fast forward
+  function fastForward() {
+    mainVideo.currentTime += 10;
+  }
+
+  // Volume control
   function changeVolume() {
     mainVideo.volume = volume_range.value / 100;
-    if (volume_range.value == 0) {
-      volume.innerHTML = 'volume_off';
-    } else if (volume_range.value < 40) {
-      volume.innerHTML = 'volume_down';
+    if (mainVideo.volume === 0) {
+      volume.textContent = 'volume_off';
+    } else if (mainVideo.volume < 0.5) {
+      volume.textContent = 'volume_down';
     } else {
-      volume.innerHTML = 'volume_up';
+      volume.textContent = 'volume_up';
     }
   }
 
-  volume_range.addEventListener('input', changeVolume);
-  volume.addEventListener('click', () => {
-    if (volume_range.value == 0) {
-      volume_range.value = 80;
-      mainVideo.volume = 0.8;
-      volume.innerHTML = 'volume_up';
+  // Mute/Unmute
+  function muteUnmute() {
+    if (mainVideo.muted) {
+      mainVideo.muted = false;
+      volume.textContent = 'volume_up';
+      volume_range.value = mainVideo.volume * 100;
     } else {
+      mainVideo.muted = true;
+      volume.textContent = 'volume_off';
       volume_range.value = 0;
-      mainVideo.volume = 0;
-      volume.innerHTML = 'volume_off';
     }
+  }
+
+  // Fullscreen
+  function toggleFullscreen() {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+      fullscreen.textContent = 'fullscreen';
+    } else {
+      video_player.requestFullscreen();
+      fullscreen.textContent = 'fullscreen_exit';
+    }
+  }
+
+  // Picture in Picture
+  async function togglePiP() {
+    if (document.pictureInPictureElement) {
+      await document.exitPictureInPicture();
+    } else {
+      await mainVideo.requestPictureInPicture();
+    }
+  }
+
+  // Settings toggle
+  function toggleSettings() {
+    settings.classList.toggle('active');
+    settingsBtn.classList.toggle('active');
+  }
+
+  // Playback speed
+  playback.forEach(item => {
+    item.addEventListener('click', () => {
+      playback.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      mainVideo.playbackRate = parseFloat(item.dataset.speed);
+    });
   });
+
+  // Settings navigation
+  settingHome.forEach(item => {
+    item.addEventListener('click', () => {
+      const label = item.dataset.label;
+      settingDivs.forEach(div => {
+        if (div.dataset.label === label) {
+          div.hidden = false;
+        } else {
+          div.hidden = true;
+        }
+      });
+    });
+  });
+
+  settingBack.forEach(item => {
+    item.addEventListener('click', () => {
+      const label = item.dataset.label;
+      settingDivs.forEach(div => {
+        if (div.dataset.label === label) {
+          div.hidden = false;
+        } else {
+          div.hidden = true;
+        }
+      });
+    });
+  });
+
+  // Auto play toggle
+  auto_play.addEventListener('click', () => {
+    auto_play.classList.toggle('active');
+  });
+
+  // Show/Hide controls
+  let controlTimeout;
+  function showControls() {
+    controls.classList.add('active');
+    clearTimeout(controlTimeout);
+    controlTimeout = setTimeout(() => {
+      if (!mainVideo.paused) {
+        controls.classList.remove('active');
+      }
+    }, 3000);
+  }
 
   // Progress area time display
   progressArea.addEventListener('mousemove', (e) => {
-    const width = progressArea.clientWidth;
-    let x = e.offsetX;
-    const time = Math.floor((x / width) * mainVideo.duration);
-    const min = Math.floor(time / 60);
-    let sec = Math.floor(time % 60);
-    sec = sec < 10 ? '0' + sec : sec;
-    progressAreaTime.style.setProperty('--x', `${x}px`);
+    progressAreaTime.style.setProperty('--x', e.offsetX + 'px');
+    const progressTime = Math.floor((e.offsetX / progressArea.clientWidth) * mainVideo.duration);
+    progressAreaTime.textContent = formatTime(progressTime);
     progressAreaTime.style.display = 'block';
-    progressAreaTime.innerHTML = `${min}:${sec}`;
   });
 
   progressArea.addEventListener('mouseleave', () => {
     progressAreaTime.style.display = 'none';
   });
 
-  // Auto play
-  auto_play.addEventListener('click', () => {
-    auto_play.classList.toggle('active');
-    auto_play.title = auto_play.classList.contains('active') ? 'Autoplay ON' : 'Autoplay OFF';
+  // Loading state
+  mainVideo.addEventListener('waiting', () => {
+    loader.style.display = 'block';
   });
 
+  mainVideo.addEventListener('canplay', () => {
+    loader.style.display = 'none';
+  });
+
+  // Video loaded
+  mainVideo.addEventListener('loadedmetadata', () => {
+    totalDuration.textContent = formatTime(mainVideo.duration);
+  });
+
+  // Video ended
   mainVideo.addEventListener('ended', () => {
+    play_pause.textContent = 'replay';
     if (auto_play.classList.contains('active')) {
       mainVideo.currentTime = 0;
-      playVideo();
-    } else {
-      play_pause.innerHTML = 'replay';
-      play_pause.title = 'Replay';
+      mainVideo.play();
+      play_pause.textContent = 'pause';
     }
   });
 
-  // Picture in Picture
-  picture_in_picutre.addEventListener('click', () => {
-    mainVideo.requestPictureInPicture();
-  });
-
-  // Fullscreen
-  fullscreen.addEventListener('click', () => {
-    if (!video_player.classList.contains('openFullScreen')) {
-      video_player.classList.add('openFullScreen');
-      fullscreen.innerHTML = 'fullscreen_exit';
-      video_player.requestFullscreen();
-    } else {
-      video_player.classList.remove('openFullScreen');
-      fullscreen.innerHTML = 'fullscreen';
-      document.exitFullscreen();
-    }
-  });
-
-  // Settings
-  settingsBtn.addEventListener('click', () => {
-    settings.classList.toggle('active');
-    settingsBtn.classList.toggle('active');
-  });
-
-  // Playback speed
-  playback.forEach((item) => {
-    item.addEventListener('click', () => {
-      playback.forEach(i => i.classList.remove('active'));
-      item.classList.add('active');
-      mainVideo.playbackRate = item.getAttribute('data-speed');
-    });
-  });
-
-  // Settings navigation
-  settingBack.forEach((item) => {
-    item.addEventListener('click', (e) => {
-      const label = e.target.getAttribute('data-label');
-      settingDivs.forEach(div => {
-        div.getAttribute('data-label') === label ? div.removeAttribute('hidden') : div.setAttribute('hidden', '');
-      });
-    });
-  });
-
-  settingHome.forEach((item) => {
-    item.addEventListener('click', (e) => {
-      const label = e.target.getAttribute('data-label');
-      settingDivs.forEach(div => {
-        div.getAttribute('data-label') === label ? div.removeAttribute('hidden') : div.setAttribute('hidden', '');
-      });
-    });
-  });
-
-  // Hide controls
-  let timer;
-  const hideControls = () => {
-    if (mainVideo.paused) return;
-    timer = setTimeout(() => {
-      if (!settingsBtn.classList.contains('active')) {
-        controls.classList.remove('active');
-      }
-    }, 3000);
-  };
-  hideControls();
-
-  video_player.addEventListener('mousemove', () => {
-    controls.classList.add('active');
-    clearTimeout(timer);
-    hideControls();
-  });
-
-  // Prevent right-click
-  mainVideo.addEventListener('contextmenu', (e) => e.preventDefault());
-
-  // Auto-rotate for fullscreen
-  function rotateToLandscape() {
-    if (screen.orientation && screen.orientation.lock) {
-      screen.orientation.lock('landscape-primary').catch(() => {});
-    }
-  }
-
-  function unlockOrientation() {
-    if (screen.orientation && screen.orientation.unlock) {
-      screen.orientation.unlock();
-    }
-  }
-
-  document.addEventListener('fullscreenchange', () => {
-    const isFullscreen = document.fullscreenElement;
-    if (isFullscreen) {
-      setTimeout(rotateToLandscape, 100);
-    } else {
-      setTimeout(unlockOrientation, 100);
-      video_player.classList.remove('openFullScreen');
-      fullscreen.innerHTML = 'fullscreen';
-    }
-  });
+  // Event listeners
+  mainVideo.addEventListener('timeupdate', updateProgress);
+  mainVideo.addEventListener('progress', updateBuffer);
+  progressArea.addEventListener('click', setProgress);
+  play_pause.addEventListener('click', playPause);
+  mainVideo.addEventListener('click', playPause);
+  fast_rewind.addEventListener('click', fastRewind);
+  fast_forward.addEventListener('click', fastForward);
+  volume_range.addEventListener('input', changeVolume);
+  volume.addEventListener('click', muteUnmute);
+  fullscreen.addEventListener('click', toggleFullscreen);
+  picture_in_picutre.addEventListener('click', togglePiP);
+  settingsBtn.addEventListener('click', toggleSettings);
+  video_player.addEventListener('mousemove', showControls);
+  video_player.addEventListener('click', showControls);
 
   // Keyboard shortcuts
   document.addEventListener('keydown', (e) => {
@@ -1056,33 +926,33 @@ body {
       case ' ':
       case 'k':
         e.preventDefault();
-        video_player.classList.contains('paused') ? pauseVideo() : playVideo();
+        playPause();
         break;
       case 'ArrowLeft':
-        mainVideo.currentTime -= 10;
+        fastRewind();
         break;
       case 'ArrowRight':
-        mainVideo.currentTime += 10;
+        fastForward();
         break;
       case 'ArrowUp':
         e.preventDefault();
-        mainVideo.volume = Math.min(1, mainVideo.volume + 0.1);
-        volume_range.value = mainVideo.volume * 100;
+        volume_range.value = Math.min(100, parseInt(volume_range.value) + 10);
         changeVolume();
         break;
       case 'ArrowDown':
         e.preventDefault();
-        mainVideo.volume = Math.max(0, mainVideo.volume - 0.1);
-        volume_range.value = mainVideo.volume * 100;
+        volume_range.value = Math.max(0, parseInt(volume_range.value) - 10);
         changeVolume();
         break;
       case 'f':
-        fullscreen.click();
+        toggleFullscreen();
         break;
       case 'm':
-        volume.click();
+        muteUnmute();
         break;
     }
   });
-</script>
 
+  // Double click for fullscreen
+  mainVideo.addEventListener('dblclick', toggleFullscreen);
+</script>
