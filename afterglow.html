@@ -1,78 +1,223 @@
-<link rel="icon" href="drive-logo.png">
-<style>
-  * {
-    padding: 0;
-    margin: 0;
-  }
-</style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player</title>
+    <link rel="icon" href="drive-logo.png">
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            background: #000;
+        }
+        
+        .video-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: flex;
+            gap: 15px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .controls:hover {
+            opacity: 1;
+        }
+        
+        .controls button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 5px 10px;
+        }
+        
+        .controls button:hover {
+            color: #4CAF50;
+        }
+        
+        .time-display {
+            color: white;
+            font-family: monospace;
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <video id="myVideo" controls poster="https://rabbi9827.github.io/Sopplayer/sample.png">
+            <!-- ভিডিও সোর্স এখানে যোগ হবে -->
+        </video>
+    </div>
+    
+    <div class="controls">
+        <button id="playBtn">▶</button>
+        <button id="pauseBtn">⏸</button>
+        <button id="muteBtn">🔊</button>
+        <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="1">
+        <span class="time-display">
+            <span id="currentTime">0:00</span> / 
+            <span id="duration">0:00</span>
+        </span>
+        <input type="range" id="seekBar" min="0" max="100" value="0" style="width: 200px;">
+    </div>
 
-<video class="afterglow" id="my-video" width="1280" height="720" data-skin="dark" poster="https://rabbi9827.github.io/Sopplayer/sample.png">
-        <source type="video/mp4" src="https://bit.ly/bbsamplevideo" />
-    </video>
+    <script>
+        // API Keys (র‍্যান্ডমভাবে একটি সিলেক্ট হবে)
+        const apiKeys = [
+            'AIzaSyCt3DULzE2trDJhfFUosWZT-3GEObbMqVU',
+            'AIzaSyCsbx8BSyLwkw6XX6Lg5OF1U0HNtI9VmCY',
+            'AIzaSyBLMJAT6oqTZxAMsCsMjXzoo4lkJL4MmfM',
+            'AIzaSyCIY6fomcJxOt0XQ_naa1rzfd5wlOMGKDY'
+        ];
+        const apiKey = apiKeys[Math.floor(Math.random() * apiKeys.length)];
+        console.log('Using API Key:', apiKey);
 
-<script type="text/javascript" src="./assets/afterglow.js"></script>
-<script>
-  var apikey = ['AIzaSyCt3DULzE2trDJhfFUosWZT-3GEObbMqVU', 'AIzaSyCsbx8BSyLwkw6XX6Lg5OF1U0HNtI9VmCY', 'AIzaSyBLMJAT6oqTZxAMsCsMjXzoo4lkJL4MmfM', 'AIzaSyCIY6fomcJxOt0XQ_naa1rzfd5wlOMGKDY'][Math.floor(Math.random() * 4)];
- console.log(apikey);
-   //apikey = 'AIzaSyD739-eb6NzS_KbVJq1K8ZAxnrMfkIqPyw';
-  let json, video ;
-  function getparam(a,e){return e||(e=window.location.href),new URL(e).searchParams.get(a)}
+        // URL থেকে ID প্যারামিটার পড়া
+        function getParam(name, url) {
+            if (!url) url = window.location.href;
+            return new URL(url).searchParams.get(name);
+        }
 
-  video = document.getElementById('my-video');
-  if(getparam('id')){
-    json = JSON.parse(atob(getparam('id'))) ;
-    let driveid = json.id;
-    videolink = `https://www.googleapis.com/drive/v3/files/${driveid }?alt=media&key=${apikey}`;
-    //video.src(videolink);
-    document.getElementById('my-video').src([
-			{type: "video/mp4", src: videolink},
-			{type: "rtmp/mp4", src: videolink}
-		]);
-    document.getElementById('my-video').poster_ = 'https://lh3.googleusercontent.com/d/'+driveid ;
-  }
-</script>
+        // ভিডিও এলিমেন্ট
+        const video = document.getElementById('myVideo');
 
+        // কাস্টম কন্ট্রোলস
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const muteBtn = document.getElementById('muteBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const seekBar = document.getElementById('seekBar');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
 
-<style>
-html, body {
-  height: 100vh !important;
-  width: 100vw !important;
-  margin: 0;
-  padding: 0;
-}
+        // URL থেকে ভিডিও লোড করা
+        function loadVideo() {
+            const idParam = getParam('id');
+            if (idParam) {
+                try {
+                    const json = JSON.parse(atob(idParam));
+                    const driveId = json.id;
+                    const videoLink = `https://www.googleapis.com/drive/v3/files/${driveId}?alt=media&key=${apiKey}`;
+                    
+                    // ভিডিও সোর্স সেট করা
+                    video.innerHTML = `<source src="${videoLink}" type="video/mp4">`;
+                    
+                    // পোস্টার সেট করা
+                    video.poster = `https://lh3.googleusercontent.com/d/${driveId}`;
+                    
+                    // ভিডিও লোড করা
+                    video.load();
+                    
+                    console.log('Video loaded from Google Drive:', driveId);
+                } catch (error) {
+                    console.error('Error loading video:', error);
+                    alert('ভিডিও লোড করা যায়নি।');
+                }
+            } else {
+                // ডিফল্ট ভিডিও (যদি কোনো ID না থাকে)
+                video.innerHTML = '<source src="https://bit.ly/bbsamplevideo" type="video/mp4">';
+                video.load();
+                console.log('Default video loaded');
+            }
+        }
 
-.afterglow  {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  padding: 0;
-}
-#my-video {
-  height: 100% !important;
-  padding: 0;
-}
-.afterglow video {
-  height: 100% !important;
-}
+        // সময় ফরম্যাট করা
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
 
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
+        // ইভেন্ট লিসেনার
+        playBtn.addEventListener('click', () => video.play());
+        pauseBtn.addEventListener('click', () => video.pause());
+        
+        muteBtn.addEventListener('click', () => {
+            video.muted = !video.muted;
+            muteBtn.textContent = video.muted ? '🔇' : '🔊';
+        });
+        
+        volumeSlider.addEventListener('input', () => {
+            video.volume = volumeSlider.value;
+        });
+        
+        seekBar.addEventListener('input', () => {
+            const time = (seekBar.value / 100) * video.duration;
+            video.currentTime = time;
+        });
+        
+        video.addEventListener('timeupdate', () => {
+            const value = (video.currentTime / video.duration) * 100;
+            seekBar.value = value || 0;
+            currentTimeEl.textContent = formatTime(video.currentTime);
+        });
+        
+        video.addEventListener('loadedmetadata', () => {
+            durationEl.textContent = formatTime(video.duration);
+            seekBar.max = 100;
+        });
 
-.plyr  {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  /*object-fit: cover;
-  z-index: -1;*/
-}
-</style>
-<script>
-  document.querySelector('video').style.paddingTop = "0px";
-</script>
+        // ভিডিও শেষ হলে শুরুতে ফিরে আসা
+        video.addEventListener('ended', () => {
+            video.currentTime = 0;
+        });
+
+        // পেজ লোড হওয়ার পর ভিডিও লোড করা
+        window.addEventListener('DOMContentLoaded', loadVideo);
+
+        // কী-বোর্ড শর্টকাট (স্পেস বার = প্লে/পজ)
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                video.paused ? video.play() : video.pause();
+            }
+            if (e.code === 'ArrowLeft') {
+                video.currentTime -= 10;
+            }
+            if (e.code === 'ArrowRight') {
+                video.currentTime += 10;
+            }
+            if (e.code === 'KeyM') {
+                video.muted = !video.muted;
+                muteBtn.textContent = video.muted ? '🔇' : '🔊';
+            }
+        });
+
+        // ভিডিও ক্লিক করলে প্লে/পজ
+        video.addEventListener('click', () => {
+            video.paused ? video.play() : video.play();
+        });
+    </script>
+</body>
+</html>
