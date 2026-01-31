@@ -1,134 +1,219 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>MediaElements.JS</title>
-        <!-- library -->
-        <link rel="icon" href="drive-logo.png">
-        <title>DrivePlyr - Google Drive Proxy Video Player with Many Powerful HTML5 Players</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DrivePlyr - Google Drive Proxy Video Player with JW Player</title>
     
-        <!-- Meta Tags for SEO -->
-        <meta name="description" content="DrivePlyr is a Google Drive Proxy Video Player with Many Powerful HTML5 Players, Hidden ID, and Many Features. Play your videos from Google Drive with ease.">
-        <meta name="keywords" content="DrivePlyr, Google Drive, Proxy, Video Player, HTML5 Player, Hidden ID, Features">
-        <meta name="author" content="RTube">
-      
-        <!-- Open Graph / Facebook -->
-        <meta property="og:type" content="website">
-        <meta property="og:url" content="https://rabbi9827.github.io/video-player/">
-        <meta property="og:title" content="DrivePlyr - Google Drive Proxy Video Player with Many Powerful HTML5 Players">
-        <meta property="og:description" content="DrivePlyr is a Google Drive Proxy Video Player with Many Powerful HTML5 Players, Hidden ID, and Many Features. Play your videos from Google Drive with ease.">
-        <meta property="og:image" content="https://sh20raj.github.io/DrivePlyr/drive-logo.png">
-      
-        <!-- Twitter -->
-        <meta property="twitter:card" content="summary_large_image">
-        <meta property="twitter:url" content="https://rabbi9827.github.io/video-player/">
-        <meta property="twitter:title" content="DrivePlyr - Google Drive Proxy Video Player with Many Powerful HTML5 Players">
-        <meta property="twitter:description" content="DrivePlyr is a Google Drive Proxy Video Player with Many Powerful HTML5 Players, Hidden ID, and Many Features. Play your videos from Google Drive with ease.">
-        <meta property="twitter:image" content="https://sh20raj.github.io/DrivePlyr/drive-logo.png">
-      
-        <!-- Other Meta Tags -->
-        <link rel="icon" href="https://raw.githubusercontent.com/SH20RAJ/DrivePlyr/main/drive-logo.png">
-        <meta name="theme-color" content="#ffffff">
-        <meta name="robots" content="index, follow">
-      
-      
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mediaelement/4.2.6/mediaelementplayer.css">
+    <!-- Meta Tags for SEO -->
+    <meta name="description" content="DrivePlyr is a Google Drive Proxy Video Player with JW Player, Hidden ID, and Many Features. Play your videos from Google Drive with ease.">
+    <meta name="keywords" content="DrivePlyr, Google Drive, Proxy, Video Player, JW Player, Hidden ID, Features">
+    <meta name="author" content="SH20RAJ">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sh20raj.github.io/DrivePlyr/">
+    <meta property="og:title" content="DrivePlyr - Google Drive Proxy Video Player with JW Player">
+    <meta property="og:description" content="DrivePlyr is a Google Drive Proxy Video Player with JW Player, Hidden ID, and Many Features. Play your videos from Google Drive with ease.">
+    <meta property="og:image" content="https://sh20raj.github.io/DrivePlyr/drive-logo.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://sh20raj.github.io/DrivePlyr/">
+    <meta property="twitter:title" content="DrivePlyr - Google Drive Proxy Video Player with JW Player">
+    <meta property="twitter:description" content="DrivePlyr is a Google Drive Proxy Video Player with JW Player, Hidden ID, and Many Features. Play your videos from Google Drive with ease.">
+    <meta property="twitter:image" content="https://sh20raj.github.io/DrivePlyr/drive-logo.png">
+    
+    <!-- Other Meta Tags -->
+    <link rel="icon" href="https://raw.githubusercontent.com/SH20RAJ/DrivePlyr/main/drive-logo.png">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="robots" content="index, follow">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+        }
+        
+        #drivexceed-container {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .error-message {
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            margin-top: 100px;
+        }
+    </style>
+    
+    <!-- JW Player Patcher Script -->
+    <script src="jwpatch.min.js"></script>
+    
+    <script>
+        // API Key rotation
+        var apikey = ['AIzaSyCt3DULzE2trDJhfFUosWZT-3GEObbMqVU', 
+                      'AIzaSyCsbx8BSyLwkw6XX6Lg5OF1U0HNtI9VmCY', 
+                      'AIzaSyBLMJAT6oqTZxAMsCsMjXzoo4lkJL4MmfM', 
+                      'AIzaSyCIY6fomcJxOt0XQ_naa1rzfd5wlOMGKDY',
+                      'AIzaSyD739-eb6NzS_KbVJq1K8ZAxnrMfkIqPyw'][Math.floor(Math.random() * 5)];
+        console.log('Using API Key:', apikey);
+        
+        // Function to get URL parameters
+        function getParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+        
+        // Initialize Drivexceed function for JW Player
+        window.drivexceed = function() {
+            // Set JW Player license key
+            window.jwplayer.key = 'https://github.com/masgasatriawirawan/drivexceed/';
+            
+            let videoSrc = '';
+            let posterImage = '';
+            let videoTitle = 'DrivePlyr Video';
+            let videoDescription = 'Google Drive video player with JW Player';
+            
+            // Check if ID parameter exists
+            if(getParam('id')) {
+                try {
+                    // Decode base64 ID if needed
+                    let decodedId;
+                    try {
+                        let json = JSON.parse(atob(getParam('id')));
+                        decodedId = json.id;
+                    } catch(e) {
+                        // If not base64, use as-is
+                        decodedId = getParam('id');
+                    }
+                    
+                    // Create Google Drive video URL
+                    videoSrc = `https://www.googleapis.com/drive/v3/files/${decodedId}?alt=media&key=${apikey}`;
+                    
+                    // Create thumbnail URL
+                    posterImage = `https://drive.google.com/thumbnail?id=${decodedId}&authuser=0&sz=w640-h360-n-k-rw`;
+                    
+                    // Alternative thumbnail
+                    // posterImage = `https://lh3.googleusercontent.com/d/${decodedId}`;
+                    
+                } catch(error) {
+                    console.error('Error parsing ID:', error);
+                    document.getElementById('drivexceed-container').innerHTML = 
+                        '<div class="error-message"><h2>Invalid Video ID</h2><p>Please check the video ID and try again.</p></div>';
+                    return;
+                }
+            } else {
+                // No ID provided - show error
+                document.getElementById('drivexceed-container').innerHTML = 
+                    '<div class="error-message"><h2>No Video ID Provided</h2><p>Please provide a Google Drive file ID in the URL.</p><p>Example: ?id=YOUR_DRIVE_FILE_ID</p></div>';
+                return;
+            }
+            
+            // JW Player configuration
+            var playerConfig = {
+                "file": videoSrc,
+                "image": posterImage,
+                "title": videoTitle,
+                "description": videoDescription,
+                "mediaid": getParam('id') || 'driveplyr',
+                "type": "mp4",
+                "mute": false,
+                "autostart": false,
+                "nextupoffset": -10,
+                "repeat": false,
+                "abouttext": "DrivePlyr GitHub",
+                "aboutlink": "https://github.com/SH20RAJ/DrivePlyr",
+                "playbackRateControls": true,
+                "playbackRates": [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
+                "defaultBandwidthEstimate": false,
+                "controls": true,
+                "aspectratio": false,
+                "localization": false,
+                "height": "100%",
+                "width": "100%",
+                "displaytitle": true,
+                "displaydescription": true,
+                "stretching": "uniform",
+                "nextUpDisplay": false,
+                "qualityLabels": false,
+                "base": "https://ssl.p.jwpcdn.com/player/v/8.3.3/",
+                "preload": "metadata",
+                "flashplayer": "https://ssl.p.jwpcdn.com/player/v/8.3.3/",
+                "hlsjsdefault": true,
+                "skin": {
+                    "controlbar": {
+                        "text": "#FFFFFF",
+                        "icons": "rgba(255, 255, 255, 0.8)",
+                        "iconsActive": "#FFFFFF",
+                        "background": "rgba(0, 0, 0, 0)"
+                    },
+                    "timeslider": {
+                        "progress": "#F2F2F2",
+                        "rail": "rgba(255, 255, 255, 0.3)"
+                    },
+                    "menus": {
+                        "text": "rgba(255, 255, 255, 0.8)",
+                        "textActive": "#FFFFFF",
+                        "background": "#333333"
+                    },
+                    "tooltips": {
+                        "text": "#000000",
+                        "background": "#FFFFFF"
+                    },
+                    "url": false,
+                    "name": false
+                },
+                "renderCaptionsNatively": false,
+                "captions": {
+                    "color": "#FFFFFF",
+                    "fontSize": 15,
+                    "fontFamily": "sans",
+                    "fontOpacity": 100,
+                    "backgroundColor": "#000000",
+                    "backgroundOpacity": 75,
+                    "edgeStyle": "none",
+                    "windowColor": "#000000",
+                    "windowOpacity": 0
+                },
+                "logo": {
+                    "file": "https://raw.githubusercontent.com/SH20RAJ/DrivePlyr/main/drive-logo.png",
+                    "hide": false,
+                    "link": "https://github.com/SH20RAJ/DrivePlyr",
+                    "margin": 20,
+                    "position": "top-right"
+                },
+                "sharing": {
+                    "link": window.location.href,
+                    "heading": "Share Video",
+                    "sites": ["facebook", "twitter", "interest", "email", "tumblr", "googleplus", "reddit", "linkedin"]
+                }
+            };
+            
+            // Initialize JW Player
+            window.jwplayer('drivexceed-container').setup(playerConfig);
+        };
+        
+        // Auto-start when patcher loads
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof window.drivexceed === 'function') {
+                setTimeout(window.drivexceed, 1000);
+            }
+        });
+    </script>
 </head>
 <body>
-        <div class="media-wrapper" >
-            <video  width="100%" height="100%" id="player1" controls poster="https://bit.ly/bbsampleposter">
-                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/CastVideos/mp4/BigBuckBunny.mp4" type="video/mp4">
-            </video>
-        </div>
-
-
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/mediaelement/4.2.6/mediaelement-and-player.min.js"></script>
-            <script>
-
-                var
-                    sourcesSelector = document.body.querySelectorAll('select'),
-                    sourcesTotal = sourcesSelector.length
-                ;
-
-                for (var i = 0; i < sourcesTotal; i++) {
-                    sourcesSelector[i].addEventListener('change', function (e) {
-                        var
-                            media = e.target.closest('.media-container').querySelector('.mejs__container').id,
-                            player = mejs.players[media]
-                        ;
-
-                        player.setSrc(e.target.value.replace('&amp;', '&'));
-                        player.setPoster('');
-                        player.load();
-
-                    });
-
-                    // These media types cannot play at all on iOS, so disabling them
-                    if (mejs.Features.isiOS) {
-                        if (sourcesSelector[i].querySelector('option[value^="rtmp"]')) {
-                            sourcesSelector[i].querySelector('option[value^="rtmp"]').disabled = true;
-                        }
-                        if (sourcesSelector[i].querySelector('option[value$="webm"]')) {
-                            sourcesSelector[i].querySelector('option[value$="webm"]').disabled = true;
-                        }
-                        if (sourcesSelector[i].querySelector('option[value$=".mpd"]')) {
-                            sourcesSelector[i].querySelector('option[value$=".mpd"]').disabled = true;
-                        }
-                        if (sourcesSelector[i].querySelector('option[value$=".ogg"]')) {
-                            sourcesSelector[i].querySelector('option[value$=".ogg"]').disabled = true;
-                        }
-                        if (sourcesSelector[i].querySelector('option[value$=".flv"]')) {
-                            sourcesSelector[i].querySelector('option[value*=".flv"]').disabled = true;
-                        }
-                    }
-                }
-
-                document.addEventListener('DOMContentLoaded', function() {
-                    var mediaElements = document.querySelectorAll('video, audio'), total = mediaElements.length;
-
-                    for (var i = 0; i < total; i++) {
-                        new MediaElementPlayer(mediaElements[i], {
-                            pluginPath: 'https://cdn.jsdelivr.net/npm/mediaelement@4.2.16/build/',
-                            shimScriptAccess: 'always',
-                            success: function () {
-                                var target = document.body.querySelectorAll('.player'), targetTotal = target.length;
-                                for (var j = 0; j < targetTotal; j++) {
-                                    target[j].style.visibility = 'visible';
-                                }
-                            }
-                        });
-                    }
-                });
-            </script>
-  <style>
-    *{
-      padding: 0;
-      margin: 0;
-    }
-    video,.media-wrapper,body,.mejs__container{
-      height: 100%;
-    }
-    body {
-      height: 100vh;
-      overflow: hidden;
-    }
-  </style>
-<script>
-  var apikey = ['AIzaSyCt3DULzE2trDJhfFUosWZT-3GEObbMqVU', 'AIzaSyCsbx8BSyLwkw6XX6Lg5OF1U0HNtI9VmCY', 'AIzaSyBLMJAT6oqTZxAMsCsMjXzoo4lkJL4MmfM', 'AIzaSyCIY6fomcJxOt0XQ_naa1rzfd5wlOMGKDY'][Math.floor(Math.random() * 4)];
- console.log(apikey);
-   //apikey = 'AIzaSyD739-eb6NzS_KbVJq1K8ZAxnrMfkIqPyw';
-  function getparam(a,e){return e||(e=window.location.href),new URL(e).searchParams.get(a)}
-
-  let video = document.getElementById('player1');
-  if(getparam('id')){
-    let json = JSON.parse(atob(getparam('id'))) ;
-    let driveid = json.id;
-    video.src = `https://www.googleapis.com/drive/v3/files/${driveid }?alt=media&key=${apikey}`;
-    video.poster = 'https://lh3.googleusercontent.com/d/'+driveid;
-  }
-</script>
-
-
+    <!-- JW Player Container -->
+    <div id="drivexceed-container"></div>
+    
+    <!-- Optional: Add your tracking scripts here -->
+    <!-- <script src="tracker.js"></script> -->
+    <!-- <img style="display: none;" src="https://iplogger.com/VideoPlyr"> -->
 </body>
 </html>
