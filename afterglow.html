@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Player</title>
-    <link rel="icon" href="drive-logo.png">
+    <title>DrivePlyr - Google Drive Video Player</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SH20RAJ/DrivePlyr/main/Images/blue-player-logo-512x512.png">
+    
+    <!-- Artplayer JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/artplayer/dist/artplayer.js"></script>
+    
     <style>
         * {
             padding: 0;
@@ -19,80 +23,44 @@
             background: #000;
         }
         
-        .video-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .artplayer-app {
+            width: 100vw;
+            height: 100vh;
         }
         
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background: #000;
+        /* ব্যানার হাইড করার জন্য */
+        .disclaimer, img[src*="000webhost"] { 
+            display: none !important; 
         }
         
-        .controls {
+        /* লোডিং ইন্ডিকেটর */
+        .loading-indicator {
             position: fixed;
-            bottom: 20px;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px 20px;
-            border-radius: 20px;
-            display: flex;
-            gap: 15px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .controls:hover {
-            opacity: 1;
-        }
-        
-        .controls button {
-            background: none;
-            border: none;
+            transform: translate(-50%, -50%);
             color: white;
-            cursor: pointer;
-            font-size: 16px;
-            padding: 5px 10px;
+            background: rgba(0,0,0,0.7);
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-family: Arial, sans-serif;
+            z-index: 1000;
+            display: none;
         }
         
-        .controls button:hover {
-            color: #4CAF50;
-        }
-        
-        .time-display {
-            color: white;
-            font-family: monospace;
-            display: flex;
-            align-items: center;
+        .loading-indicator.show {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <div class="video-container">
-        <video id="myVideo" controls poster="https://rabbi9827.github.io/Sopplayer/sample.png">
-            <!-- ভিডিও সোর্স এখানে যোগ হবে -->
-        </video>
-    </div>
-    
-    <div class="controls">
-        <button id="playBtn">▶</button>
-        <button id="pauseBtn">⏸</button>
-        <button id="muteBtn">🔊</button>
-        <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="1">
-        <span class="time-display">
-            <span id="currentTime">0:00</span> / 
-            <span id="duration">0:00</span>
-        </span>
-        <input type="range" id="seekBar" min="0" max="100" value="0" style="width: 200px;">
-    </div>
+    <div class="artplayer-app"></div>
+    <div class="loading-indicator" id="loadingIndicator">ভিডিও লোড হচ্ছে...</div>
 
     <script>
+        // লোডিং ইন্ডিকেটর
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        
         // API Keys (র‍্যান্ডমভাবে একটি সিলেক্ট হবে)
         const apiKeys = [
             'AIzaSyCt3DULzE2trDJhfFUosWZT-3GEObbMqVU',
@@ -109,115 +77,185 @@
             return new URL(url).searchParams.get(name);
         }
 
-        // ভিডিও এলিমেন্ট
-        const video = document.getElementById('myVideo');
-
-        // কাস্টম কন্ট্রোলস
-        const playBtn = document.getElementById('playBtn');
-        const pauseBtn = document.getElementById('pauseBtn');
-        const muteBtn = document.getElementById('muteBtn');
-        const volumeSlider = document.getElementById('volumeSlider');
-        const seekBar = document.getElementById('seekBar');
-        const currentTimeEl = document.getElementById('currentTime');
-        const durationEl = document.getElementById('duration');
-
-        // URL থেকে ভিডিও লোড করা
-        function loadVideo() {
+        // ভিডিও ক্লিয়ার করার ফাংশন
+        function getDriveVideoUrl() {
             const idParam = getParam('id');
-            if (idParam) {
-                try {
-                    const json = JSON.parse(atob(idParam));
-                    const driveId = json.id;
-                    const videoLink = `https://www.googleapis.com/drive/v3/files/${driveId}?alt=media&key=${apiKey}`;
-                    
-                    // ভিডিও সোর্স সেট করা
-                    video.innerHTML = `<source src="${videoLink}" type="video/mp4">`;
-                    
-                    // পোস্টার সেট করা
-                    video.poster = `https://lh3.googleusercontent.com/d/${driveId}`;
-                    
-                    // ভিডিও লোড করা
-                    video.load();
-                    
-                    console.log('Video loaded from Google Drive:', driveId);
-                } catch (error) {
-                    console.error('Error loading video:', error);
-                    alert('ভিডিও লোড করা যায়নি।');
+            if (!idParam) return null;
+            
+            try {
+                const json = JSON.parse(atob(idParam));
+                const driveId = json.id;
+                
+                // Google Drive API থেকে ভিডিও লিংক তৈরি
+                const videoUrl = `https://www.googleapis.com/drive/v3/files/${driveId}?alt=media&key=${apiKey}`;
+                
+                return {
+                    url: videoUrl,
+                    poster: `https://lh3.googleusercontent.com/d/${driveId}`,
+                    id: driveId
+                };
+            } catch (error) {
+                console.error('Error parsing video ID:', error);
+                return null;
+            }
+        }
+
+        // ভিডিও লোড করা
+        function initPlayer() {
+            loadingIndicator.classList.add('show');
+            
+            const videoData = getDriveVideoUrl();
+            
+            if (!videoData) {
+                alert('ভিডিও আইডি পাওয়া যায়নি। URL এ ?id= প্যারামিটার যোগ করুন।');
+                loadingIndicator.classList.remove('show');
+                return;
+            }
+
+            console.log('Loading video from Google Drive:', videoData.id);
+
+            // আর্টপ্লেয়ার ইনিশিয়ালাইজ
+            var art = new Artplayer({
+                container: '.artplayer-app',
+                url: videoData.url,
+                poster: videoData.poster,
+                volume: 0.5,
+                isLive: false,
+                muted: false,
+                autoplay: true,
+                pip: true,
+                autoSize: true,
+                autoMini: true,
+                screenshot: true,
+                setting: true,
+                loop: false,
+                flip: true,
+                playbackRate: true,
+                aspectRatio: true,
+                fullscreen: true,
+                fullscreenWeb: true,
+                subtitleOffset: true,
+                miniProgressBar: true,
+                mutex: true,
+                backdrop: true,
+                playsInline: true,
+                autoPlayback: true,
+                airplay: true,
+                theme: '#23ade5',
+                lang: 'en',
+                moreVideoAttr: {
+                    crossOrigin: 'anonymous',
+                },
+                
+                // কোয়ালিটি সেটিংস
+                quality: [
+                    {
+                        default: true,
+                        html: 'Auto',
+                        url: videoData.url,
+                    }
+                ],
+
+                // কাস্টম সেটিংস মেনু
+                settings: [
+                    {
+                        width: 200,
+                        html: 'Playback Speed',
+                        icon: '<img width="22" height="22" src="https://artplayer.org/assets/img/state.svg">',
+                        tooltip: '1x',
+                        range: [1, 0.25, 2, 0.25],
+                        onRange(item) {
+                            art.playbackRate = item.range[0];
+                            return `${item.range[0]}x`;
+                        },
+                    },
+                ],
+
+                // রাইট ক্লিক মেনু
+                contextmenu: [
+                    {
+                        html: 'DrivePlyr Custom Menu',
+                        click(contextmenu) {
+                            contextmenu.show = false;
+                        },
+                    },
+                ],
+
+                // লেয়ার বা লোগো
+                layers: [
+                    {
+                        html: '<img width="60" src="https://raw.githubusercontent.com/SH20RAJ/DrivePlyr/main/Images/blue-player-logo-512x512.png" style="opacity: 0.7">',
+                        click() {
+                            console.info('Logo Clicked');
+                        },
+                        style: {
+                            position: 'absolute',
+                            top: '20px',
+                            right: '20px',
+                        },
+                    },
+                ],
+
+                // কাস্টম কন্ট্রোল বাটন
+                controls: [
+                    {
+                        position: 'right',
+                        html: 'DrivePlyr',
+                        index: 1,
+                        tooltip: 'Google Drive Video Player',
+                        style: { marginRight: '20px' },
+                        click() {
+                            window.open('https://github.com/SH20RAJ/DrivePlyr', '_blank');
+                        },
+                    },
+                ],
+
+                // আইকন সেটিংস
+                icons: {
+                    loading: '<img src="https://artplayer.org/assets/img/ploading.gif">',
+                    state: '<img width="100" height="100" src="https://artplayer.org/assets/img/state.svg">',
+                    indicator: '<img width="16" height="16" src="https://artplayer.org/assets/img/indicator.svg">',
+                },
+            });
+
+            // প্লেয়ার রেডি হলে
+            art.on('ready', () => {
+                loadingIndicator.classList.remove('show');
+                console.info('DrivePlyr loaded with Google Drive video!');
+            });
+
+            // এরর হ্যান্ডলিং
+            art.on('error', (error) => {
+                loadingIndicator.classList.remove('show');
+                console.error('Player error:', error);
+                alert('ভিডিও লোড করতে সমস্যা হয়েছে।');
+            });
+
+            // কী-বোর্ড শর্টকাট (স্পেস বার = প্লে/পজ)
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    art.toggle();
                 }
-            } else {
-                // ডিফল্ট ভিডিও (যদি কোনো ID না থাকে)
-                video.innerHTML = '<source src="https://bit.ly/bbsamplevideo" type="video/mp4">';
-                video.load();
-                console.log('Default video loaded');
-            }
+                if (e.code === 'ArrowLeft') {
+                    art.seek = art.currentTime - 10;
+                }
+                if (e.code === 'ArrowRight') {
+                    art.seek = art.currentTime + 10;
+                }
+                if (e.code === 'KeyM') {
+                    art.muted = !art.muted;
+                }
+                if (e.code === 'KeyF') {
+                    art.fullscreen = !art.fullscreen;
+                }
+            });
+
+            return art;
         }
 
-        // সময় ফরম্যাট করা
-        function formatTime(seconds) {
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        }
-
-        // ইভেন্ট লিসেনার
-        playBtn.addEventListener('click', () => video.play());
-        pauseBtn.addEventListener('click', () => video.pause());
-        
-        muteBtn.addEventListener('click', () => {
-            video.muted = !video.muted;
-            muteBtn.textContent = video.muted ? '🔇' : '🔊';
-        });
-        
-        volumeSlider.addEventListener('input', () => {
-            video.volume = volumeSlider.value;
-        });
-        
-        seekBar.addEventListener('input', () => {
-            const time = (seekBar.value / 100) * video.duration;
-            video.currentTime = time;
-        });
-        
-        video.addEventListener('timeupdate', () => {
-            const value = (video.currentTime / video.duration) * 100;
-            seekBar.value = value || 0;
-            currentTimeEl.textContent = formatTime(video.currentTime);
-        });
-        
-        video.addEventListener('loadedmetadata', () => {
-            durationEl.textContent = formatTime(video.duration);
-            seekBar.max = 100;
-        });
-
-        // ভিডিও শেষ হলে শুরুতে ফিরে আসা
-        video.addEventListener('ended', () => {
-            video.currentTime = 0;
-        });
-
-        // পেজ লোড হওয়ার পর ভিডিও লোড করা
-        window.addEventListener('DOMContentLoaded', loadVideo);
-
-        // কী-বোর্ড শর্টকাট (স্পেস বার = প্লে/পজ)
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                e.preventDefault();
-                video.paused ? video.play() : video.pause();
-            }
-            if (e.code === 'ArrowLeft') {
-                video.currentTime -= 10;
-            }
-            if (e.code === 'ArrowRight') {
-                video.currentTime += 10;
-            }
-            if (e.code === 'KeyM') {
-                video.muted = !video.muted;
-                muteBtn.textContent = video.muted ? '🔇' : '🔊';
-            }
-        });
-
-        // ভিডিও ক্লিক করলে প্লে/পজ
-        video.addEventListener('click', () => {
-            video.paused ? video.play() : video.play();
-        });
+        // পেজ লোড হওয়ার পর প্লেয়ার ইনিশিয়ালাইজ
+        window.addEventListener('DOMContentLoaded', initPlayer);
     </script>
 </body>
 </html>
