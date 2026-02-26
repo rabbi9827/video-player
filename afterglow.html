@@ -1,109 +1,130 @@
-<?php
-// Google Drive API থেকে ভিডিও ডেটা নেওয়ার ফাংশন
-function getDriveVideoData($driveId, $apiKey) {
-    // ফাইল মেটাডেটা পাওয়ার জন্য API কল
-    $metadataUrl = "https://www.googleapis.com/drive/v3/files/{$driveId}?key={$apiKey}&fields=name,mimeType,size";
-    $metadata = json_decode(file_get_contents($metadataUrl), true);
-    
-    // ভিডিও সোর্স URL
-    $videoUrl = "https://www.googleapis.com/drive/v3/files/{$driveId}?alt=media&key={$apiKey}";
-    
-    return [
-        'title' => $metadata['name'] ?? 'Google Drive Video',
-        'sources' => [
-            ['file' => $videoUrl, 'type' => 'mp4', 'label' => 'Auto']
-        ],
-        'image' => "https://lh3.googleusercontent.com/d/{$driveId}"
-    ];
-}
-
-// URL থেকে ID প্যারামিটার পড়া
-$idParam = $_GET['id'] ?? '';
-$videoData = null;
-
-if ($idParam) {
-    try {
-        $json = json_decode(base64_decode($idParam), true);
-        $driveId = $json['id'] ?? '';
-        
-        if ($driveId) {
-            $apiKeys = [
-                'AIzaSyCt3DULzE2trDJhfFUosWZT-3GEObbMqVU',
-                'AIzaSyCsbx8BSyLwkw6XX6Lg5OF1U0HNtI9VmCY',
-                'AIzaSyBLMJAT6oqTZxAMsCsMjXzoo4lkJL4MmfM',
-                'AIzaSyCIY6fomcJxOt0XQ_naa1rzfd5wlOMGKDY'
-            ];
-            $apiKey = $apiKeys[array_rand($apiKeys)];
-            $videoData = getDriveVideoData($driveId, $apiKey);
-        }
-    } catch (Exception $e) {
-        error_log('Error parsing video ID: ' . $e->getMessage());
-    }
-}
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JW Player - Google Drive Video</title>
+    <title>JW Player - Google Drive Video Player</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SH20RAJ/DrivePlyr/main/Images/blue-player-logo-512x512.png">
+    
+    <!-- JW Player JS Library (ArtPlayer সরিয়ে JW Player বসানো হয়েছে) -->
+    <script src="https://ssl.p.jwpcdn.com/player/v/8.26.9/jwplayer.js"></script>
+    <script>jwplayer.key = "ITWMv7t88JGzI0xPwW8I0+LveiXX9SWbfdmt0ArUSyc=";</script>
     
     <style>
-        body { margin: 0; padding: 0; background: #000; overflow: hidden; }
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            background: #000;
+        }
+        
         #player-container {
             width: 100vw;
             height: 100vh;
-            position: absolute;
-            top: 0;
-            left: 0;
         }
         
-        /* লোডিং ইন্ডিকেটর */
-        .loading {
+        /* ব্যানার হাইড করার জন্য */
+        .disclaimer, img[src*="000webhost"] { 
+            display: none !important; 
+        }
+        
+        /* লোডিং ইন্ডিকেটর - আগের মতোই */
+        .loading-indicator {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             color: white;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.7);
             padding: 15px 30px;
             border-radius: 50px;
             font-family: Arial, sans-serif;
             z-index: 1000;
-            display: <?php echo $videoData ? 'none' : 'flex'; ?>;
+            display: none;
+        }
+        
+        .loading-indicator.show {
+            display: block;
         }
     </style>
-    
-    <!-- JW Player Script -->
-    <script src="https://ssl.p.jwpcdn.com/player/v/8.26.9/jwplayer.js"></script>
-    <script>jwplayer.key = "ITWMv7t88JGzI0xPwW8I0+LveiXX9SWbfdmt0ArUSyc=";</script>
 </head>
 <body>
-    <div class="loading" id="loading">
-        <?php echo $videoData ? 'ভিডিও লোড হচ্ছে...' : 'ভিডিও আইডি পাওয়া যায়নি'; ?>
-    </div>
-    
     <div id="player-container"></div>
+    <div class="loading-indicator" id="loadingIndicator">ভিডিও লোড হচ্ছে...</div>
 
-    <?php if ($videoData): ?>
     <script>
-        window.onload = function() {
-            const loading = document.getElementById('loading');
+        // লোডিং ইন্ডিকেটর - আগের মতোই
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        
+        // API Keys - আগের মতোই (র‍্যান্ডমভাবে একটি সিলেক্ট হবে)
+        const apiKeys = [
+            'AIzaSyCt3DULzE2trDJhfFUosWZT-3GEObbMqVU',
+            'AIzaSyCsbx8BSyLwkw6XX6Lg5OF1U0HNtI9VmCY',
+            'AIzaSyBLMJAT6oqTZxAMsCsMjXzoo4lkJL4MmfM',
+            'AIzaSyCIY6fomcJxOt0XQ_naa1rzfd5wlOMGKDY'
+        ];
+        const apiKey = apiKeys[Math.floor(Math.random() * apiKeys.length)];
+        console.log('Using API Key:', apiKey);
+
+        // URL থেকে ID প্যারামিটার পড়া - আগের মতোই
+        function getParam(name, url) {
+            if (!url) url = window.location.href;
+            return new URL(url).searchParams.get(name);
+        }
+
+        // ভিডিও ডেটা পাওয়ার ফাংশন - আগের মতোই
+        function getDriveVideoData() {
+            const idParam = getParam('id');
+            if (!idParam) return null;
             
+            try {
+                const json = JSON.parse(atob(idParam));
+                const driveId = json.id;
+                
+                // Google Drive API থেকে ভিডিও লিংক তৈরি
+                const videoUrl = `https://www.googleapis.com/drive/v3/files/${driveId}?alt=media&key=${apiKey}`;
+                
+                return {
+                    url: videoUrl,
+                    poster: `https://lh3.googleusercontent.com/d/${driveId}`,
+                    id: driveId
+                };
+            } catch (error) {
+                console.error('Error parsing video ID:', error);
+                return null;
+            }
+        }
+
+        // ভিডিও লোড করা - JW Player দিয়ে রিপ্লেস করা হয়েছে
+        function initPlayer() {
+            loadingIndicator.classList.add('show');
+            
+            const videoData = getDriveVideoData();
+            
+            if (!videoData) {
+                alert('ভিডিও আইডি পাওয়া যায়নি। URL এ ?id= প্যারামিটার যোগ করুন।');
+                loadingIndicator.classList.remove('show');
+                return;
+            }
+
+            console.log('Loading video from Google Drive:', videoData.id);
+
+            // JW Player ইনিশিয়ালাইজ (ArtPlayer এর জায়গায়)
             var player = jwplayer("player-container").setup({
                 "playlist": [{
-                    "title": "<?php echo addslashes($videoData['title']); ?>",
-                    "image": "<?php echo $videoData['image']; ?>",
-                    "sources": [
-                        <?php foreach ($videoData['sources'] as $source): ?>
-                        {
-                            "file": "<?php echo $source['file']; ?>",
-                            "type": "<?php echo $source['type']; ?>",
-                            "label": "<?php echo $source['label']; ?>",
-                            "default": <?php echo isset($source['default']) ? 'true' : 'false'; ?>
-                        },
-                        <?php endforeach; ?>
-                    ]
+                    "title": "Google Drive Video",
+                    "image": videoData.poster,
+                    "sources": [{
+                        "file": videoData.url,
+                        "type": "mp4",
+                        "label": "Auto"
+                    }]
                 }],
                 "autostart": true,
                 "controls": true,
@@ -116,22 +137,26 @@ if ($idParam) {
                 "skin": {
                     "controlbar": { "iconsActive": "#23ade5" },
                     "timeslider": { "progress": "#23ade5" }
-                }
+                },
+                "pipIcon": false, // পিকচার-ইন-পিকচার বন্ধ
+                "related": { "file": "" } // রিলেটেড ভিডিও বন্ধ
             });
 
-            player.on('ready', function() {
-                loading.style.display = 'none';
-                console.log('JW Player ready with Google Drive video');
+            // প্লেয়ার রেডি হলে - আগের মতোই
+            player.on('ready', () => {
+                loadingIndicator.classList.remove('show');
+                console.info('JW Player loaded with Google Drive video!');
             });
 
-            player.on('error', function(e) {
-                console.error('Player error:', e);
-                loading.innerHTML = 'ভিডিও লোড করতে সমস্যা হয়েছে';
-                loading.style.display = 'flex';
+            // এরর হ্যান্ডলিং - আগের মতোই
+            player.on('error', (error) => {
+                loadingIndicator.classList.remove('show');
+                console.error('Player error:', error);
+                alert('ভিডিও লোড করতে সমস্যা হয়েছে।');
             });
 
-            // কী-বোর্ড শর্টকাট
-            document.addEventListener('keydown', function(e) {
+            // কী-বোর্ড শর্টকাট - আগের মতোই (স্পেস বার = প্লে/পজ)
+            document.addEventListener('keydown', (e) => {
                 if (e.code === 'Space') {
                     e.preventDefault();
                     player.pause(!player.getState());
@@ -149,16 +174,12 @@ if ($idParam) {
                     player.setFullscreen(!player.getFullscreen());
                 }
             });
-        };
+
+            return player;
+        }
+
+        // পেজ লোড হওয়ার পর প্লেয়ার ইনিশিয়ালাইজ - আগের মতোই
+        window.addEventListener('DOMContentLoaded', initPlayer);
     </script>
-    <?php else: ?>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() {
-                window.location.href = '/';
-            }, 3000);
-        });
-    </script>
-    <?php endif; ?>
 </body>
 </html>
