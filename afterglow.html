@@ -3,183 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JW Player - Google Drive Video Player</title>
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SH20RAJ/DrivePlyr/main/Images/blue-player-logo-512x512.png">
+    <title>VidStack Player - Agent 327</title>
     
-    <!-- JW Player JS Library (ArtPlayer সরিয়ে JW Player বসানো হয়েছে) -->
-    <script src="https://ssl.p.jwpcdn.com/player/v/8.26.9/jwplayer.js"></script>
-    <script>jwplayer.key = "ITWMv7t88JGzI0xPwW8I0+LveiXX9SWbfdmt0ArUSyc=";</script>
+    <!-- VidStack CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vidstack@latest/player/styles/default.css" />
+    
+    <!-- VidStack Scripts -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/vidstack@latest/player/index.js"></script>
     
     <style>
-        * {
-            padding: 0;
+        body {
             margin: 0;
-            box-sizing: border-box;
-        }
-        
-        html, body {
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
+            padding: 0;
             background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
         
-        #player-container {
-            width: 100vw;
-            height: 100vh;
+        .player-container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
         }
         
         /* ব্যানার হাইড করার জন্য */
         .disclaimer, img[src*="000webhost"] { 
             display: none !important; 
         }
-        
-        /* লোডিং ইন্ডিকেটর - আগের মতোই */
-        .loading-indicator {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            background: rgba(0,0,0,0.7);
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-family: Arial, sans-serif;
-            z-index: 1000;
-            display: none;
-        }
-        
-        .loading-indicator.show {
-            display: block;
-        }
     </style>
 </head>
 <body>
-    <div id="player-container"></div>
-    <div class="loading-indicator" id="loadingIndicator">ভিডিও লোড হচ্ছে...</div>
-
-    <script>
-        // লোডিং ইন্ডিকেটর - আগের মতোই
-        const loadingIndicator = document.getElementById('loadingIndicator');
+    <div class="player-container">
+        <!-- এই HTML ট্যাগ VidStack প্লেয়ার তৈরি করবে -->
+        <media-player 
+            title="Agent 327 Operation Barber Shop"
+            src="https://files.vidstack.io/agent-327/720p.mp4"
+            poster="https://files.vidstack.io/agent-327/poster.png"
+            thumbnails="https://files.vidstack.io/agent-327/thumbnails.vtt"
+            crossorigin
+            playsinline
+        >
+            <media-provider></media-provider>
+            
+            <!-- সাবটাইটেল ট্র্যাক -->
+            <track 
+                src="https://files.vidstack.io/agent-327/subs/english.vtt" 
+                label="English" 
+                srclang="en-US" 
+                kind="subtitles" 
+                default 
+            />
+            <track 
+                src="https://files.vidstack.io/agent-327/subs/spanish.vtt" 
+                label="Spanish" 
+                srclang="es-ES" 
+                kind="subtitles" 
+            />
+            <track 
+                src="https://files.vidstack.io/agent-327/subs/french.vtt" 
+                label="French" 
+                srclang="fr-FR" 
+                kind="subtitles" 
+            />
+            <track 
+                src="https://files.vidstack.io/agent-327/subs/german.vtt" 
+                label="German" 
+                srclang="ge-GE" 
+                kind="subtitles" 
+            />
+            <track 
+                src="https://files.vidstack.io/agent-327/subs/italian.vtt" 
+                label="Italian" 
+                srclang="it-IT" 
+                kind="subtitles" 
+            />
+            <track 
+                src="https://files.vidstack.io/agent-327/subs/russian.vtt" 
+                label="Russian" 
+                srclang="ru-RU" 
+                kind="subtitles" 
+            />
+            
+            <!-- চ্যাপ্টার ট্র্যাক -->
+            <track 
+                src="https://files.vidstack.io/agent-327/chapters.vtt" 
+                kind="chapters" 
+                srclang="en-US" 
+                default 
+            />
+            
+            <!-- ইউআই কম্পোনেন্ট -->
+            <media-ui>
+                <!-- কাস্টম কন্ট্রোল (ঐচ্ছিক) -->
+            </media-ui>
+        </media-player>
+    </div>
+    
+    <script type="module">
+        // জাভাস্ক্রিপ্ট দিয়ে আরও কন্ট্রোল (ঐচ্ছিক)
+        import { VidStack } from 'https://cdn.jsdelivr.net/npm/vidstack@latest/player/index.js';
         
-        // API Keys - আগের মতোই (র‍্যান্ডমভাবে একটি সিলেক্ট হবে)
-        const apiKeys = [
-            'AIzaSyCt3DULzE2trDJhfFUosWZT-3GEObbMqVU',
-            'AIzaSyCsbx8BSyLwkw6XX6Lg5OF1U0HNtI9VmCY',
-            'AIzaSyBLMJAT6oqTZxAMsCsMjXzoo4lkJL4MmfM',
-            'AIzaSyCIY6fomcJxOt0XQ_naa1rzfd5wlOMGKDY'
-        ];
-        const apiKey = apiKeys[Math.floor(Math.random() * apiKeys.length)];
-        console.log('Using API Key:', apiKey);
-
-        // URL থেকে ID প্যারামিটার পড়া - আগের মতোই
-        function getParam(name, url) {
-            if (!url) url = window.location.href;
-            return new URL(url).searchParams.get(name);
-        }
-
-        // ভিডিও ডেটা পাওয়ার ফাংশন - আগের মতোই
-        function getDriveVideoData() {
-            const idParam = getParam('id');
-            if (!idParam) return null;
+        document.addEventListener('DOMContentLoaded', () => {
+            const player = document.querySelector('media-player');
             
-            try {
-                const json = JSON.parse(atob(idParam));
-                const driveId = json.id;
-                
-                // Google Drive API থেকে ভিডিও লিংক তৈরি
-                const videoUrl = `https://www.googleapis.com/drive/v3/files/${driveId}?alt=media&key=${apiKey}`;
-                
-                return {
-                    url: videoUrl,
-                    poster: `https://lh3.googleusercontent.com/d/${driveId}`,
-                    id: driveId
-                };
-            } catch (error) {
-                console.error('Error parsing video ID:', error);
-                return null;
-            }
-        }
-
-        // ভিডিও লোড করা - JW Player দিয়ে রিপ্লেস করা হয়েছে
-        function initPlayer() {
-            loadingIndicator.classList.add('show');
+            // একাধিক সোর্স যোগ করার জন্য (VidStack স্বয়ংক্রিয়ভাবে সাপোর্ট করে)
+            player.addEventListener('provider-setup', (event) => {
+                const provider = event.detail;
+                // কাস্টম সেটআপ
+            });
             
-            const videoData = getDriveVideoData();
-            
-            if (!videoData) {
-                alert('ভিডিও আইডি পাওয়া যায়নি। URL এ ?id= প্যারামিটার যোগ করুন।');
-                loadingIndicator.classList.remove('show');
-                return;
-            }
-
-            console.log('Loading video from Google Drive:', videoData.id);
-
-            // JW Player ইনিশিয়ালাইজ (ArtPlayer এর জায়গায়)
-            var player = jwplayer("player-container").setup({
-                "playlist": [{
-                    "title": "Google Drive Video",
-                    "image": videoData.poster,
-                    "sources": [{
-                        "file": videoData.url,
-                        "type": "mp4",
-                        "label": "Auto"
-                    }]
-                }],
-                "autostart": true,
-                "controls": true,
-                "displaytitle": true,
-                "width": "100%",
-                "height": "100%",
-                "stretching": "uniform",
-                "playbackRateControls": true,
-                "playbackRates": [0.5, 1, 1.25, 1.5, 2],
-                "skin": {
-                    "controlbar": { "iconsActive": "#23ade5" },
-                    "timeslider": { "progress": "#23ade5" }
-                },
-                "pipIcon": false, // পিকচার-ইন-পিকচার বন্ধ
-                "related": { "file": "" } // রিলেটেড ভিডিও বন্ধ
-            });
-
-            // প্লেয়ার রেডি হলে - আগের মতোই
-            player.on('ready', () => {
-                loadingIndicator.classList.remove('show');
-                console.info('JW Player loaded with Google Drive video!');
-            });
-
-            // এরর হ্যান্ডলিং - আগের মতোই
-            player.on('error', (error) => {
-                loadingIndicator.classList.remove('show');
-                console.error('Player error:', error);
-                alert('ভিডিও লোড করতে সমস্যা হয়েছে।');
-            });
-
-            // কী-বোর্ড শর্টকাট - আগের মতোই (স্পেস বার = প্লে/পজ)
-            document.addEventListener('keydown', (e) => {
-                if (e.code === 'Space') {
-                    e.preventDefault();
-                    player.pause(!player.getState());
-                }
-                if (e.code === 'ArrowLeft') {
-                    player.seek(player.getPosition() - 10);
-                }
-                if (e.code === 'ArrowRight') {
-                    player.seek(player.getPosition() + 10);
-                }
-                if (e.code === 'KeyM') {
-                    player.setMute(!player.getMute());
-                }
-                if (e.code === 'KeyF') {
-                    player.setFullscreen(!player.getFullscreen());
-                }
-            });
-
-            return player;
-        }
-
-        // পেজ লোড হওয়ার পর প্লেয়ার ইনিশিয়ালাইজ - আগের মতোই
-        window.addEventListener('DOMContentLoaded', initPlayer);
+            console.log('VidStack player loaded');
+        });
     </script>
 </body>
 </html>
